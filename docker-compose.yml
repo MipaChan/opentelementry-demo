@@ -1,66 +1,4 @@
 services:
-  frontend:
-    build:
-      context: ./frontend
-      args:
-        NEXT_PUBLIC_API_URL: api
-    expose:
-      - 3000
-    depends_on:
-      - backend-api
-    networks:
-      - dokploy-network
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.frontend.entrypoints=web
-      - traefik.http.routers.frontend.rule=PathPrefix(`/`)
-      - traefik.http.services.frontend.loadbalancer.server.port=3000
-      - traefik.http.routers.frontend.priority=1
-
-  backend-api:
-    build: ./backend-api
-    expose:
-      - 3001
-    environment:
-      - DB_SERVICE_HOST=backend-db
-      - DB_SERVICE_PORT=3002
-      - OTEL_SERVICE_NAME=backend-api
-      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
-    depends_on:
-      - backend-db
-      - otel-collector
-    networks:
-      - dokploy-network
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.backend-api.entrypoints=web
-      - traefik.http.routers.backend-api.rule=PathPrefix(`/api`)
-      - traefik.http.services.backend-api.loadbalancer.server.port=3001
-      - traefik.http.middlewares.backend-api-strip.stripprefix.prefixes=/api
-      - traefik.http.routers.backend-api.middlewares=backend-api-strip
-
-  backend-db:
-    build: ./backend-db
-    expose:
-      - 3002
-    environment:
-      - MONGODB_URI=mongodb://mongodb:27017/demo
-      - OTEL_SERVICE_NAME=backend-db
-      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
-    depends_on:
-      - mongodb
-      - otel-collector
-    networks:
-      - dokploy-network
-
-  mongodb:
-    image: mongo:latest
-    expose:
-      - 27017
-    volumes:
-      - mongodb_data:/data/db
-    networks:
-      - dokploy-network
 
   otel-collector:
     image: otel/opentelemetry-collector-contrib:latest
@@ -74,6 +12,7 @@ services:
       - tempo
     networks:
       - dokploy-network
+      
 
   tempo:
     image: grafana/tempo:latest
@@ -87,6 +26,7 @@ services:
       - 4317 # Tempo OTLP gRPC
     networks:
       - dokploy-network
+      
 
   grafana:
     image: grafana/grafana:latest
@@ -99,8 +39,6 @@ services:
       - GF_AUTH_DISABLE_LOGIN_FORM=true
       - GF_FEATURE_TOGGLES_ENABLE=traceqlEditor
       - GF_SERVER_HTTP_PORT=8080
-      - GF_SERVER_ROOT_URL=/grafana
-      - GF_SERVER_SERVE_FROM_SUB_PATH=true
     expose:
       - 8080
     networks:
@@ -108,12 +46,11 @@ services:
     labels:
       - traefik.enable=true
       - traefik.http.routers.grafana.entrypoints=web
-      - traefik.http.routers.grafana.rule=PathPrefix(`/grafana`)
       - traefik.http.services.grafana.loadbalancer.server.port=8080
-
+      
 networks:
   dokploy-network:
-    external: true 
+    external: true
 
 volumes:
   mongodb_data:
