@@ -1,0 +1,42 @@
+server:
+  http_listen_port: 3200
+  grpc_server_max_recv_msg_size: 104857600  # 100MB
+  grpc_server_max_send_msg_size: 104857600  # 100MB
+
+distributor:
+  receivers:
+    otlp:
+      protocols:
+        grpc:
+          endpoint: "0.0.0.0:4317"
+          max_recv_msg_size_mib: 100
+          max_concurrent_streams: 1000
+
+ingester:
+  trace_idle_period: 10s
+  max_block_bytes: 1_000_000
+  max_block_duration: 5m
+
+compactor:
+  compaction:
+    compaction_window: 1h
+    max_block_bytes: 100_000_000
+    block_retention: 1h
+    compacted_block_retention: 10m
+
+query_frontend:
+  max_retries: 5
+  search:
+    max_duration: 0
+
+storage:
+  trace:
+    backend: local
+    local:
+      path: /var/tempo/data
+    pool:
+      max_workers: 100
+      queue_depth: 10000
+
+usage_report:
+  reporting_enabled: false

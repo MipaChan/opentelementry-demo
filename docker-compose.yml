@@ -1,0 +1,81 @@
+services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"    # Next.js 前端
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:3001
+    depends_on:
+      - backend-api
+
+  backend-api:
+    build: ./backend-api
+    ports:
+      - "3001:3001"    # NestJS API
+    environment:
+      - DB_SERVICE_HOST=backend-db
+      - DB_SERVICE_PORT=3002
+      - OTEL_SERVICE_NAME=backend-api
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
+    depends_on:
+      - backend-db
+      - otel-collector
+
+  backend-db:
+    build: ./backend-db
+    ports:
+      - "3002:3002"    # NestJS DB Service
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017/demo
+      - OTEL_SERVICE_NAME=backend-db
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
+    depends_on:
+      - mongodb
+      - otel-collector
+
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27017:27017"  # MongoDB
+    volumes:
+      - mongodb_data:/data/db
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:latest
+    command: ["--config=/etc/otel-collector-config.yaml"]
+    volumes:
+      - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml
+    ports:
+      - "4318:4318"    # OTLP HTTP
+      - "4317:4317"    # OTLP gRPC
+    depends_on:
+      - tempo
+
+  tempo:
+    image: grafana/tempo:latest
+    user: root
+    command: ["-config.file=/etc/tempo.yaml"] 
+    volumes:
+      - ./tempo.yaml:/etc/tempo.yaml
+      - tempo_data:/var/tempo/data
+    ports:
+      - "3200:3200"    # Tempo HTTP
+      - "4319:4317"    # Tempo OTLP gRPC
+
+  grafana:
+    image: grafana/grafana:latest
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - grafana_data:/var/lib/grafana
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_AUTH_DISABLE_LOGIN_FORM=true
+      - GF_FEATURE_TOGGLES_ENABLE=traceqlEditor
+    ports:
+      - "3100:3000"    # Grafana UI
+
+volumes:
+  mongodb_data:
+  grafana_data:
+  tempo_data:
