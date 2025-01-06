@@ -10,8 +10,8 @@ services:
 
   backend-api:
     build: ./backend-api
-    ports:
-      - "3001:3001"    # NestJS API
+    # ports:
+    #   - "3001:3001"    # NestJS API
     environment:
       - DB_SERVICE_HOST=backend-db
       - DB_SERVICE_PORT=3002
@@ -23,8 +23,8 @@ services:
 
   backend-db:
     build: ./backend-db
-    ports:
-      - "3002:3002"    # NestJS DB Service
+    # ports:
+    #   - "3002:3002"    # NestJS DB Service
     environment:
       - MONGODB_URI=mongodb://mongodb:27017/demo
       - OTEL_SERVICE_NAME=backend-db
@@ -35,8 +35,8 @@ services:
 
   mongodb:
     image: mongo:latest
-    ports:
-      - "27017:27017"  # MongoDB
+    # ports:
+    #   - "27017:27017"  # MongoDB
     volumes:
       - mongodb_data:/data/db
 
@@ -45,9 +45,9 @@ services:
     command: ["--config=/etc/otel-collector-config.yaml"]
     volumes:
       - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml
-    ports:
-      - "4318:4318"    # OTLP HTTP
-      - "4317:4317"    # OTLP gRPC
+    # ports:
+      # - "4318:4318"    # OTLP HTTP
+      # - "4317:4317"    # OTLP gRPC
     depends_on:
       - tempo
 
@@ -58,9 +58,9 @@ services:
     volumes:
       - ./tempo.yaml:/etc/tempo.yaml
       - tempo_data:/var/tempo/data
-    ports:
-      - "3200:3200"    # Tempo HTTP
-      - "4319:4317"    # Tempo OTLP gRPC
+    # ports:
+    #   - "3200:3200"    # Tempo HTTP
+    #   - "4319:4317"    # Tempo OTLP gRPC
 
   grafana:
     image: grafana/grafana:latest
