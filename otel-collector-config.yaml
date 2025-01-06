@@ -13,7 +13,7 @@ processors:
 
 exporters:
   otlp:
-    endpoint: "tempo:4317"  # 这里使用内部端口，因为在 Docker 网络内部
+    endpoint: "tempo:4317"
     tls:
       insecure: true
   debug:
@@ -24,4 +24,4 @@ service:
     traces:
       receivers: [otlp]
       processors: [batch]
-      exporters: [otlp, debug]
+      exporters: [otlp]

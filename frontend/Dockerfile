@@ -1,6 +1,12 @@
 # Build stage
 FROM node:20-alpine AS development
 
+# Add build arguments
+ARG NEXT_PUBLIC_API_URL
+
+# Set as environment variables
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+
 WORKDIR /app
 
 # First copy package files
