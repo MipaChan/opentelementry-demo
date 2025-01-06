@@ -1,8 +1,8 @@
 services:
   frontend:
     build: ./frontend
-    ports:
-      - "3000:3000"    # Next.js 前端
+    # ports:
+    #   - "127.0.0.1:3000:3000"    # Next.js 前端
     environment:
       - NEXT_PUBLIC_API_URL=http://localhost:3001
     depends_on:
@@ -72,8 +72,8 @@ services:
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
       - GF_AUTH_DISABLE_LOGIN_FORM=true
       - GF_FEATURE_TOGGLES_ENABLE=traceqlEditor
-    ports:
-      - "3100:3000"    # Grafana UI
+    # ports:
+    #   - "127.0.0.1:3100:3000"    # Grafana UI
 
 volumes:
   mongodb_data:
