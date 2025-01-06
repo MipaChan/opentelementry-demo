@@ -27,9 +27,8 @@ services:
       - dokploy-network
     labels:
       - traefik.enable=true
-      - traefik.http.routers.backend-db.rule=Host(`backend.dokploy.com`)
-      - traefik.http.routers.backend-db.entrypoints=web
-      - traefik.http.services.backend-db.loadbalancer.server.port=3001
+      - traefik.http.routers.backend-api.entrypoints=web
+      - traefik.http.services.backend-api.loadbalancer.server.port=3001
       
 
   backend-db:
@@ -49,8 +48,8 @@ services:
 
   mongodb:
     image: mongo:latest
-    # ports:
-    #   - "27017:27017"  # MongoDB
+    expose:
+      - 27017
     volumes:
       - mongodb_data:/data/db
     networks:
@@ -62,9 +61,9 @@ services:
     command: ["--config=/etc/otel-collector-config.yaml"]
     volumes:
       - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml
-    # ports:
-      # - "4318:4318"    # OTLP HTTP
-      # - "4317:4317"    # OTLP gRPC
+    expose:
+      - 4318 # OTLP HTTP
+      - 4317 # OTLP gRPC
     depends_on:
       - tempo
     networks:
@@ -79,10 +78,8 @@ services:
       - ./tempo.yaml:/etc/tempo.yaml
       - tempo_data:/var/tempo/data
     expose:
-      - 3200
-    # ports:
-    #   - "3200:3200"    # Tempo HTTP
-    #   - "4319:4317"    # Tempo OTLP gRPC
+      - 3200 # Tempo HTTP
+      - 4317 # Tempo OTLP gRPC
     networks:
       - dokploy-network
       
