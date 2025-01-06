@@ -2,7 +2,7 @@ services:
 
   otel-collector:
     image: otel/opentelemetry-collector-contrib:latest
-    command: ["--config=/etc/otel-collector-config.yaml"]
+    command: [ "--config=/etc/otel-collector-config.yaml" ]
     volumes:
       - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml
     expose:
@@ -12,12 +12,11 @@ services:
       - tempo
     networks:
       - dokploy-network
-      
 
   tempo:
     image: grafana/tempo:latest
     user: root
-    command: ["-config.file=/etc/tempo.yaml"] 
+    command: [ "-config.file=/etc/tempo.yaml" ]
     volumes:
       - ./tempo.yaml:/etc/tempo.yaml
       - tempo_data:/var/tempo/data
@@ -26,7 +25,6 @@ services:
       - 4317 # Tempo OTLP gRPC
     networks:
       - dokploy-network
-      
 
   grafana:
     image: grafana/grafana:latest
@@ -43,11 +41,7 @@ services:
       - 8080
     networks:
       - dokploy-network
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.grafana.entrypoints=web
-      - traefik.http.services.grafana.loadbalancer.server.port=8080
-      
+
 networks:
   dokploy-network:
     external: true
