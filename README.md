@@ -13,5 +13,7 @@ docker-compose down
 ```
 
 # 访问
-- Demo TODO App: http://ip:3000
-- Grafana: http://localhost:3100
+
+- frondend: http://host/
+- backend: http://host/api
+- Grafana: http://host/grafana
