@@ -43,8 +43,6 @@ services:
       - DB_SERVICE_PORT=3002
       - OTEL_SERVICE_NAME=backend-api
       - OTEL_EXPORTER_OTLP_ENDPOINT=${OTEL_EXPORTER_OTLP_ENDPOINT}
-    depends_on:
-      - backend-db
     networks:
       - dokploy-network
     labels:
@@ -63,8 +61,6 @@ services:
       - MONGODB_URI=mongodb://mongodb:27017/demo
       - OTEL_SERVICE_NAME=backend-db
       - OTEL_EXPORTER_OTLP_ENDPOINT=${OTEL_EXPORTER_OTLP_ENDPOINT}
-    depends_on:
-      - mongodb
     networks:
       - dokploy-network
 
@@ -72,7 +68,3 @@ networks:
   dokploy-network:
     external: true 
 
-volumes:
-  mongodb_data:
-  grafana_data:
-  tempo_data:
