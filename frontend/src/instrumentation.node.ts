@@ -19,7 +19,6 @@ function generateTracer() {
     resource: new Resource({
       [ATTR_SERVICE_NAME]: process.env.OTEL_SERVICE_NAME || 'next-app',
     }),
-    spanProcessor: new SimpleSpanProcessor(new OTLPTraceExporter()),
     traceExporter: traceExporter,
 
   });
