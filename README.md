@@ -97,6 +97,11 @@
 - `grafana/`: Grafana配置目录
 
 
+[next.js接入指南](https://nextjs.org/docs/app/building-your-application/optimizing/open-telemetry#manual-opentelemetry-configuration)
+
+
+
+
 ## 参考资源
 
 - [OpenTelemetry文档](https://opentelemetry.io/docs/)
