@@ -20,6 +20,7 @@ services:
       context: ./frontend
       args:
         NEXT_PUBLIC_API_URL: api
+        OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT}
     expose:
       - 3000
     depends_on:
@@ -32,7 +33,7 @@ services:
       - traefik.http.routers.frontend.rule=PathPrefix(`/`)
       - traefik.http.services.frontend.loadbalancer.server.port=3000
       - traefik.http.routers.frontend.priority=1
-
+      
   backend-api:
     build: ./backend-api
     expose:
@@ -66,64 +67,6 @@ services:
       - mongodb
     networks:
       - dokploy-network
-
-  mongodb:
-    image: mongo:latest
-    expose:
-      - 27017
-    volumes:
-      - mongodb_data:/data/db
-    networks:
-      - dokploy-network
-
-  otel-collector:
-    image: otel/opentelemetry-collector-contrib:latest
-    command: ["--config=/etc/otel-collector-config.yaml"]
-    volumes:
-      - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml
-    expose:
-      - 4318 # OTLP HTTP
-      - 4317 # OTLP gRPC
-    depends_on:
-      - tempo
-    networks:
-      - dokploy-network
-
-  tempo:
-    image: grafana/tempo:latest
-    user: root
-    command: ["-config.file=/etc/tempo.yaml"] 
-    volumes:
-      - ./tempo.yaml:/etc/tempo.yaml
-      - tempo_data:/var/tempo/data
-    expose:
-      - 3200 # Tempo HTTP
-      - 4317 # Tempo OTLP gRPC
-    networks:
-      - dokploy-network
-
-  grafana:
-    image: grafana/grafana:latest
-    volumes:
-      - ./grafana/provisioning:/etc/grafana/provisioning
-      - grafana_data:/var/lib/grafana
-    environment:
-      - GF_AUTH_ANONYMOUS_ENABLED=true
-      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
-      - GF_AUTH_DISABLE_LOGIN_FORM=true
-      - GF_FEATURE_TOGGLES_ENABLE=traceqlEditor
-      - GF_SERVER_HTTP_PORT=8080
-      - GF_SERVER_ROOT_URL=/grafana
-      - GF_SERVER_SERVE_FROM_SUB_PATH=true
-    expose:
-      - 8080
-    networks:
-      - dokploy-network
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.grafana.entrypoints=web
-      - traefik.http.routers.grafana.rule=PathPrefix(`/grafana`)
-      - traefik.http.services.grafana.loadbalancer.server.port=8080
 
 networks:
   dokploy-network:
