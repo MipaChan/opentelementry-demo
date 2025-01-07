@@ -20,6 +20,7 @@ services:
       context: ./frontend
       args:
         NEXT_PUBLIC_API_URL: api
+        OTEL_SERVICE_NAME: next-app
         OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT}
     expose:
       - 3000
