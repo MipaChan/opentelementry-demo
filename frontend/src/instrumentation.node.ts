@@ -4,6 +4,9 @@ import { Resource } from '@opentelemetry/resources';
 import { ATTR_SERVICE_NAME } from '@opentelemetry/semantic-conventions';
 import { diag, DiagConsoleLogger, DiagLogLevel } from '@opentelemetry/api';
 import { HttpInstrumentation } from '@opentelemetry/instrumentation-http';
+import {
+  getNodeAutoInstrumentations,
+} from "@opentelemetry/auto-instrumentations-node";
 /**
  * 產生 OpenTelemetry SDK 實例
  */
@@ -19,9 +22,7 @@ function generateTracer() {
       [ATTR_SERVICE_NAME]: process.env.OTEL_SERVICE_NAME || 'next-app',
     }),
     traceExporter: traceExporter,
-    instrumentations: [
-      new HttpInstrumentation(),
-    ],
+    instrumentations: getNodeAutoInstrumentations(),
   });
 }
 

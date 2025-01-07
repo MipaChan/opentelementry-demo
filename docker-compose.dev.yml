@@ -21,7 +21,7 @@ services:
       args:
         NEXT_PUBLIC_API_URL: api
         OTEL_SERVICE_NAME: next-app
-        OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT}
+        OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: ${OTEL_EXPORTER_OTLP_TRACES_ENDPOINT}
     expose:
       - 3000
     depends_on:
