@@ -43,5 +43,5 @@ EXPOSE 3000
 ENV PORT 3000
 ENV HOSTNAME "0.0.0.0"
 ENV NODE_ENV production
-
+ENV NODE_OPTIONS "--require @opentelemetry/auto-instrumentations-node/register"
 CMD ["node", "server.js"]
