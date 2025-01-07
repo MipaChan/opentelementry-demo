@@ -33,7 +33,7 @@ services:
       - traefik.http.routers.frontend.rule=PathPrefix(`/`)
       - traefik.http.services.frontend.loadbalancer.server.port=3000
       - traefik.http.routers.frontend.priority=1
-      
+
   backend-api:
     build: ./backend-api
     expose:
@@ -43,6 +43,8 @@ services:
       - DB_SERVICE_PORT=3002
       - OTEL_SERVICE_NAME=backend-api
       - OTEL_EXPORTER_OTLP_ENDPOINT=${OTEL_EXPORTER_OTLP_ENDPOINT}
+    depends_on:
+      - backend-db
     networks:
       - dokploy-network
     labels:
@@ -61,6 +63,17 @@ services:
       - MONGODB_URI=mongodb://mongodb:27017/demo
       - OTEL_SERVICE_NAME=backend-db
       - OTEL_EXPORTER_OTLP_ENDPOINT=${OTEL_EXPORTER_OTLP_ENDPOINT}
+    depends_on:
+      - mongodb
+    networks:
+      - dokploy-network
+
+  mongodb:
+    image: mongo:latest
+    expose:
+      - 27017
+    volumes:
+      - mongodb_data:/data/db
     networks:
       - dokploy-network
 
@@ -68,3 +81,5 @@ networks:
   dokploy-network:
     external: true 
 
+volumes:
+  mongodb_data:
